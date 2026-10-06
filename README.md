@@ -4,7 +4,7 @@ Assignment 4
 
 A horizontal spaceship shooter built with pygame-ce. Your NASA Artemis-style
 ship is on the left, green-alien UFOs come from the right, and the backdrop
-is an Interstellar black hole with twinkling diamond stars.
+is a black hole with twinkling diamond stars.
 
 ## How to run it
 
@@ -13,6 +13,11 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install pygame-ce
 python3 galaga_vertical_backup.py
+install folder "updated pygame" folder with all assets on desktop
+
+run code
+cd ~/Desktop/pygame
+.venv/bin/python galaga_vertical_backup.py
 ```
 
 The line that starts the game: `python3 galaga_vertical_backup.py`
