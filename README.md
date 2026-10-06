@@ -54,8 +54,4 @@ I did this to change the window name to "Artemis vs UfOs"
 
 I wasn't fully understanding how to approach this and I find that I'm at a loss with a lot of terminology with assignments. I think it could be helpful to review necessary vocab. I was using my agent to figure out around vocab I found unfamiliar even simple vocab like git, trying to find definitions is quite difficult to understand and apply to assignments.
 I just used my agent to do this:
-
-Commit 6726361 — "YOLO: remove shot cooldown for auto-fire" (the agent's bad idea)
-Commit 86beeb8 — "Revert YOLO: remove shot cooldown for auto-fire" (thrown away)
-
-It was to 
+I noticed when I told my agent to make me blinking stars, they weren't to my specification I wanted them to be white, a specific size and have them blink like heart beats. When applying the changes, the agent made them too small and because they were too small, they would not run the animation. So I had the agent reverse the the size the change so they could stay white and run the animation.
