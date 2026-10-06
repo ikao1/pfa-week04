@@ -41,14 +41,21 @@ Three of my `def`s:
 - `draw_ufo(screen, rect, t)` — draws each green-alien UFO (saucer, dome,
   alien face, antennae).
 
-The one I wrote by hand: `draw_artemis` — I designed the NASA ship's shape,
-the NASA lettering placement on the hull.
-def draw_artemis(screen, rect, t=0):
-    """NASA Artemis-style ship with extra detail, animated engine flames."""
+The one I wrote by hand: 
+
+def ship_name():
+    return "Artemis"
+    
+pygame.display.set_caption(ship_name() + " vs UFOs")
+
+I did this to change the window name to "Artemis vs UfOs"
 
 ## One undo
 
-Commit `6726361` ("YOLO: remove shot cooldown for auto-fire") set the shot
-cooldown to 0 so the ship fired every frame. It made the game trivial and the
-laser sound was constant, so I threw it away with `git revert` (commit
-`86beeb8`).
+I wasn't fully understanding how to approach this and I find that I'm at a loss with a lot of terminology with assignments. I think it could be helpful to review necessary vocab. I was using my agent to figure out around vocab I found unfamiliar even simple vocab like git, trying to find definitions is quite difficult to understand and apply to assignments.
+I just used my agent to do this:
+
+Commit 6726361 — "YOLO: remove shot cooldown for auto-fire" (the agent's bad idea)
+Commit 86beeb8 — "Revert YOLO: remove shot cooldown for auto-fire" (thrown away)
+
+It was to 
