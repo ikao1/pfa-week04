@@ -23,7 +23,7 @@ FPS = 60
 PLAYER_SPEED = 5
 BULLET_SPEED = 8
 ENEMY_BULLET_SPEED = 4
-ENEMY_ROWS, ENEMY_COLS = 5, 4
+ENEMY_ROWS, ENEMY_COLS = 5, 1
 
 BLACK = (8, 8, 16)
 WHITE = (240, 240, 240)
@@ -71,17 +71,38 @@ def make_enemies():
     return enemies
 
 
-def draw_artemis(screen, rect):
-    """Tiny Artemis II style ship: white capsule + service module + orange tank."""
+def draw_artemis(screen, rect, t=0):
+    """NASA Artemis-style ship with extra detail, animated engine flames."""
     x, y, w, h = rect
-    # main body (horizontal)
-    pygame.draw.rect(screen, WHITE, (x, y + h // 4, w - 8, h // 2))
-    # nose cone
-    pygame.draw.polygon(screen, DARK_GRAY, [(x + w - 8, y + h // 4), (x + w, y + h // 2), (x + w - 8, y + 3 * h // 4)])
-    # orange service module stripe
-    pygame.draw.rect(screen, ORANGE, (x, y + h // 4, 6, h // 2))
-    # engine flame
-    pygame.draw.polygon(screen, YELLOW, [(x, y + h // 3), (x - 8, y + h // 2), (x, y + 2 * h // 3)])
+    # animated rocket flames behind the ship (left side)
+    flame_len = 10 + int(6 * math.sin(t * 0.02))
+    pygame.draw.polygon(screen, ORANGE, [(x - 2, y + h // 4 + 2), (x - 2 - flame_len - 4, y + h // 2), (x - 2, y + 3 * h // 4 - 2)])
+    pygame.draw.polygon(screen, YELLOW, [(x - 2, y + h // 3 + 2), (x - 2 - flame_len, y + h // 2), (x - 2, y + 2 * h // 3 - 2)])
+    # main capsule body
+    pygame.draw.rect(screen, WHITE, (x, y + h // 4, w - 10, h // 2))
+    # service module tail section
+    pygame.draw.rect(screen, (190, 190, 200), (x, y + h // 4, 8, h // 2))
+    pygame.draw.line(screen, DARK_GRAY, (x + 8, y + h // 4), (x + 8, y + 3 * h // 4), 2)
+    # orange fuel tank stripe
+    pygame.draw.rect(screen, ORANGE, (x + 8, y + h // 4, 5, h // 2))
+    # crew capsule taper (nose)
+    pygame.draw.polygon(screen, WHITE, [(x + w - 10, y + h // 4), (x + w - 2, y + 3 * h // 8), (x + w - 2, y + 5 * h // 8), (x + w - 10, y + 3 * h // 4)])
+    # launch escape tower (needle at nose)
+    pygame.draw.line(screen, DARK_GRAY, (x + w - 2, y + h // 2), (x + w + 4, y + h // 2), 2)
+    # windows
+    pygame.draw.rect(screen, (40, 60, 90), (x + w - 18, y + h // 2 - 4, 4, 3))
+    pygame.draw.rect(screen, (40, 60, 90), (x + w - 26, y + h // 2 - 4, 4, 3))
+    # engine nozzle
+    pygame.draw.polygon(screen, DARK_GRAY, [(x, y + h // 4 + 2), (x - 4, y + 3 * h // 4 - 2), (x, y + 3 * h // 4 - 2)])
+    # panel lines / detail pixels
+    pygame.draw.line(screen, GRAY, (x + 14, y + h // 4), (x + 14, y + 3 * h // 4), 1)
+    pygame.draw.line(screen, GRAY, (x + w // 2, y + h // 4), (x + w // 2, y + 3 * h // 4), 1)
+    pygame.draw.circle(screen, CYAN, (x + w // 2 + 8, y + h // 2), 2)  # thruster detail
+    # NASA logo fitted to the ship side — text only, no blue circle
+    logo_font = pygame.font.SysFont("Menlo", max(8, int(h * 0.35)), bold=True)
+    text = logo_font.render("NASA", True, (11, 61, 145))
+    text_rect = text.get_rect(center=(x + (w - 10) // 2 + 6, y + h // 2))
+    screen.blit(text, text_rect)
 
 
 _ENEMY_IMG = None
@@ -110,16 +131,16 @@ def _enemy_sprite(size):
     return pygame.transform.scale(_ENEMY_IMG, size)  # nearest-neighbor upscale
 
 
-def draw_enemy(screen, rect, t):
-    """Sprite plus big animated claw hands (50% larger than the body)."""
-    screen.blit(_enemy_sprite((rect.w, rect.h)), rect)
-    claw = int(rect.h * 1.5)  # 50% bigger than the body
-    cx = rect.left - claw // 4
-    cy = rect.centery
-    open_amt = int(4 + 4 * math.sin(t * 0.008 + rect.left))  # claws open/close
-    # top and bottom claw arms
-    pygame.draw.arc(screen, WHITE, (cx - claw // 2, cy - claw // 2 - open_amt, claw, claw), math.radians(-70), math.radians(-10), 3)
-    pygame.draw.arc(screen, WHITE, (cx - claw // 2, cy - claw // 2 + open_amt, claw, claw), math.radians(10), math.radians(70), 3)
+def draw_ufo(screen, rect, t=0):
+    """Generic green alien in a UFO saucer."""
+    x, y, w, h = rect
+    cx = x + w // 2
+    pygame.draw.ellipse(screen, GRAY, (x, y + h // 2, w, h // 2))
+    pygame.draw.ellipse(screen, DARK_GRAY, (x + 4, y + 2 * h // 3, w - 8, h // 4))
+    pygame.draw.circle(screen, CYAN, (cx, y + h // 3), w // 5)       # dome
+    pygame.draw.circle(screen, ALIEN_GREEN, (cx, y + h // 3), w // 7)  # green alien
+    pygame.draw.circle(screen, YELLOW, (cx - w // 5, y + 3 * h // 4), 2)
+    pygame.draw.circle(screen, YELLOW, (cx + w // 5, y + 3 * h // 4), 2)
 
 
 _BG_FRAMES = []
@@ -141,12 +162,19 @@ def _make_bg_frames():
     pal_img = pal_img.convert()  # back to 32-bit display surface
     for f in range(24):
         frame = pal_img.copy()
-        # spinning ring highlights over the disk
-        cx, cy = int(pw * 0.62), int(ph * 0.55)
-        for r, thick, speed in ((30, 2, 1.0), (44, 1, 0.7), (22, 1, 1.4)):
-            a0 = f / 24 * 2 * math.pi * speed
-            rect = pygame.Rect(cx - r, cy - r // 2, r * 2, r)
-            pygame.draw.arc(frame, (255, 230, 170), rect, a0, a0 + 1.6, thick)
+        # scattered twinkling diamond stars, pulsing like a heartbeat
+        random.seed(42)
+        stars = [(random.randrange(2, pw - 2), random.randrange(2, ph - 2), random.random()) for _ in range(60)]
+        for sx, sy, phase in stars:
+            s = (f / 24 + phase) % 1.0  # one heartbeat cycle per 24 frames
+            # lub-dub: two bright bumps close together, then dark
+            hb = math.exp(-((s - 0.12) ** 2) / 0.004) + 0.55 * math.exp(-((s - 0.32) ** 2) / 0.006)
+            bright = min(255, 60 + int(195 * hb))
+            size = 1 + int(1.5 * hb)
+            color = (bright, bright, bright)
+            pygame.draw.polygon(frame, color, [
+                (sx, sy - size), (sx + size, sy), (sx, sy + size), (sx - size, sy)
+            ])
         frames.append(frame)
     return frames
 
@@ -167,17 +195,34 @@ def main():
     font = pygame.font.SysFont("Menlo", 22)
     big = pygame.font.SysFont("Menlo", 42, bold=True)
 
+    # sounds
+    pygame.mixer.init()
+    try:
+        laser_snd = pygame.mixer.Sound(str(SAVE_DIR / "laser.wav"))
+        explosion_snd = pygame.mixer.Sound(str(SAVE_DIR / "explosion.wav"))
+        laser_snd.set_volume(0.25)
+        explosion_snd.set_volume(0.5)
+        pygame.mixer.music.load(str(SAVE_DIR / "music.wav"))
+        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.play(-1)  # loop forever
+    except pygame.error:
+        class _Silent:
+            def play(self): pass
+            def set_volume(self, v): pass
+        laser_snd = explosion_snd = _Silent()
+
     high_score = load_high_score()
 
     def new_run():
         return {
-            "player": pygame.Rect(60, HEIGHT // 2 - 10, 34, 22),
+            "player": pygame.Rect(55, HEIGHT // 2 - 17, 51, 33),  # 50% smaller
             "bullets": [],
             "enemy_bullets": [],
             "enemies": make_enemies(),
             "score": 0,
             "lives": 3,
             "shoot_cooldown": 0,
+            "explosions": [],
         }
 
     state = new_run()
@@ -223,6 +268,7 @@ def main():
             if keys[pygame.K_SPACE] and state["shoot_cooldown"] <= 0:
                 state["bullets"].append(pygame.Rect(state["player"].right, state["player"].centery - 2, 12, 4))
                 state["shoot_cooldown"] = 12
+                laser_snd.play()
             state["shoot_cooldown"] = max(0, state["shoot_cooldown"] - 1)
 
             for b in state["bullets"]:
@@ -249,6 +295,8 @@ def main():
                         state["bullets"].remove(b)
                         state["enemies"].remove(e)
                         state["score"] += 10
+                        state["explosions"].append({"x": e.centerx, "y": e.centery, "age": 0})
+                        explosion_snd.play()
                         break
 
             for b in list(state["enemy_bullets"]):
@@ -268,14 +316,23 @@ def main():
 
         t = pygame.time.get_ticks()
         draw_background(screen, t)
-        draw_artemis(screen, state["player"])
+        draw_artemis(screen, state["player"], t)
         for b in state["bullets"]:
             pygame.draw.rect(screen, YELLOW, b)
         for b in state["enemy_bullets"]:
             pygame.draw.rect(screen, GREEN, b)  # green claw laser
             pygame.draw.rect(screen, (200, 255, 200), (b.x, b.centery - 1, b.w, 2))  # laser core
         for e in state["enemies"]:
-            draw_enemy(screen, e, t)
+            draw_ufo(screen, e, t)
+        # explosions
+        for ex in list(state["explosions"]):
+            ex["age"] += 1
+            r = ex["age"] * 3
+            if ex["age"] % 2:
+                pygame.draw.circle(screen, ORANGE, (ex["x"], ex["y"]), r)
+                pygame.draw.circle(screen, YELLOW, (ex["x"], ex["y"]), r // 2)
+            if ex["age"] > 12:
+                state["explosions"].remove(ex)
 
         screen.blit(font.render(f"Score: {state['score']}", True, WHITE), (10, 10))
         screen.blit(font.render(f"Lives: {state['lives']}", True, WHITE), (10, 34))
