@@ -20,7 +20,8 @@ cd ~/Desktop/pygame
 .venv/bin/python galaga_vertical_backup.py
 ```
 
-The line that starts the game: `python3 galaga_vertical_backup.py`
+The line that starts the game: `cd ~/Desktop/pygame
+.venv/bin/python galaga_vertical_backup.py`
 
 Controls: Up/Down or W/S to move, Space to shoot, P to pause, R to resume a
 saved game, Q or Esc to save & quit, Enter to restart after game over.
