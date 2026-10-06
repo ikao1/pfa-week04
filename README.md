@@ -1,6 +1,6 @@
 # pfa-week04
 Assignment 4
-# ArtemisII vs UFOs
+# Artemis vs UFOs
 
 A horizontal spaceship shooter built with pygame-ce. Your NASA Artemis-style
 ship is on the left, green-alien UFOs come from the right, and the backdrop
